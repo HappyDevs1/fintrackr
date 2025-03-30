@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import dotenv from "dotenv";
 import { auth } from "./controllers/authenticate";
+import { getAccounts } from "./controllers/accounts";
 
 dotenv.config();
 const app = express();
@@ -14,6 +15,14 @@ app.get("/", (request: Request, response: Response) => {
 }); 
 
 app.get('/auth', auth); // Authentication route
+app.get('/accounts', async (req: Request, res: Response) => {
+  try {
+    const accounts = await getAccounts();
+    res.status(200).json(accounts);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+}); // Accounts route
 
 app.listen(PORT, () => { 
   console.log("Server running at PORT: ", PORT); 
