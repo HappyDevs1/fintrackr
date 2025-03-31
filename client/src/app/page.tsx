@@ -5,6 +5,7 @@ import axios from "axios";
 import { redirect } from "next/navigation";
 import SpendingPieChart from "./components/SpendingPieChart";
 import SpendingRecommendations from "./components/SpendingRecommendations";
+import LoadingSpinner from "./components/LoadingSpinner";
 
 interface SpendingData {
   place: string;
@@ -75,7 +76,7 @@ export default function ForecastPlot() {
     fetchTopSpendingData();
   }, []);
 
-  if (loading) return <div>Loading forecast...</div>;
+  if (loading) return <LoadingSpinner />;
   if (error) return <div className="text-red-500">{error}</div>;
 
   return (
@@ -89,19 +90,16 @@ export default function ForecastPlot() {
         <div className="grid grid-cols-1 lg:grid-cols-2 mt-4 ">
           <div className="flex justify-around gap-1 mb-5 lg:flex-col lg:justify-start lg:items-start lg:gap-4 text lg:text-2xl md:text-xl">
             <button
-              className="bg-gray-200 lg:w-42 lg:py-1 rounded-bl-lg"
+              className="bg-gray-200 lg:w-62 md:w-42 lg:py-1 rounded-bl-lg"
               onClick={() => redirect("#forecast")}
             >
               Forecast
             </button>
-            <button className="bg-gray-200 lg:w-42  lg:py-1 rounded-bl-lg">
-              Balances
+            <button className="bg-gray-200 lg:w-62 md:w-42  lg:py-1 rounded-bl-lg" onClick={() => redirect("#spendings")}>
+              Spendings
             </button>
-            <button className="bg-gray-200 lg:w-42  lg:py-1 rounded-bl-lg">
-              Transactions
-            </button>
-            <button className="bg-gray-200 lg:w-42  lg:py-1 rounded-bl-lg">
-              Beneficiaries
+            <button className="bg-gray-200 lg:w-62 md:w-42  lg:py-1 rounded-bl-lg" onClick={() => redirect("#recommendations")}>
+              Recommendations
             </button>
           </div>
           <div className="flex flex-col items-center justify-center">
@@ -116,8 +114,8 @@ export default function ForecastPlot() {
             ) : (
               <div>No forecast data available</div>
             )}
-            <p className="mt-5">
-              You will be left with x amount by x amount of time
+            <p className="mt-5 text-red-500">
+              NB: This is a prediction of your future account balance based on your current spendings
             </p>
           </div>
         </div>
@@ -128,7 +126,7 @@ export default function ForecastPlot() {
       
       {/* Pie Chart */}
       <div className="bg-white p-4 rounded-lg shadow">
-        <div className="h-96">
+        <div className="h-96" id="recommendations">
           <SpendingPieChart data={spendingData} />
         </div>
       </div>
@@ -143,7 +141,7 @@ export default function ForecastPlot() {
       )}
 
       {/* Spending Details */}
-      <div className="mt-6 bg-white p-4 rounded-lg shadow">
+      <div className="mt-6 bg-white p-4 rounded-lg shadow" id="spendings">
         <h2 className="text-lg font-semibold mb-3">Detailed Breakdown</h2>
         <div className="space-y-2">
           {spendingData.map((item, index) => (
