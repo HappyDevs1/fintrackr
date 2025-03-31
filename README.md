@@ -33,5 +33,20 @@
    ```bash
    git clone https://github.com/HappyDevs1/fintrackr.git
    cd fintrackr
-2. **Set up environment variables
+2. **Set up environment variables**
    Create .env in the root of the server folder
+   ```bash
+   PORT=4000
+   CLIENT_ID=<your_investec_client_id>
+   CLIENT_SECRET=<your_investec_secret>
+   API_KEY=<your_investec_api_key>
+   ACCOUNT_ID=<your_account_number>
+3. **Install Python dependencies**
+4. Install Node dependencies
+5. Run the application
+   ```bash
+   # Start backend
+   cd server && npm run dev
+   # In another terminal, start frontend
+   cd client && npm run dev
+   
