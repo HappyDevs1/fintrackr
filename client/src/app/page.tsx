@@ -9,6 +9,17 @@ export default function ForecastPlot() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const fetchTopTransactions = async () => {
+    try {
+      const response = await axios.get("http://localhost:4000/top/transactions");
+      return response.data;
+    }
+    catch (err) {
+      console.error("Fetch error:", err);
+      setError("Failed to load transactions");
+    }
+  }
+
   useEffect(() => {
     const fetchData = async () => {
       try {
