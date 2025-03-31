@@ -4,7 +4,7 @@ import { auth } from "./controllers/authenticate";
 import { getAccounts } from "./controllers/accounts";
 // Have to fix the error for this import
 // import { getAccountBalance } from "./controllers/accounts";
-import { getTransactions } from "./controllers/transactions";
+import { getTopSpendingLocations, getTransactions } from "./controllers/transactions";
 import { spawn } from 'child_process';
 import cors from 'cors';
 
@@ -50,6 +50,15 @@ app.use('/transactions', async (req: Request, res: Response) => {
     res.status(500).json({ error: error.message });
   }
 }); // Transactions route
+app.use('/top/transactions', async (req: Request, res: Response) => {
+  try {
+    const transactions = await getTopSpendingLocations();
+    res.status(200).json(transactions);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+}) // Top transactions route
+
 app.get('/forecast', async (req: Request, res: Response) => {
   try {
     const transactions = await getTransactions();
