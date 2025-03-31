@@ -42,8 +42,17 @@
    API_KEY=<your_investec_api_key>
    ACCOUNT_ID=<your_account_number>
 3. **Install Python dependencies**
-4. Install Node dependencies
-5. Run the application
+   ```bash
+   cd server/model
+   pip install -r requirements.txt
+   
+5. Install Node dependencies
+   ```bash
+   Start by, cd server
+   npm i
+   For front end dependencies, cd client
+   npm i
+6. Run the application
    ```bash
    # Start backend
    cd server && npm run dev
