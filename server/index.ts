@@ -51,27 +51,50 @@ app.use('/transactions', async (req: Request, res: Response) => {
 app.get('/forecast', async (req: Request, res: Response) => {
   try {
     const transactions = await getTransactions();
-    res.status(200).json(transactions);
-    const pythonProcess = spawn('python', [modelPath,], {
-      stdio: ['pipe', 'pipe', 'pipe'],
+    
+    const pythonProcess = spawn('python', [modelPath], {
+      stdio: ['pipe', 'pipe', 'pipe']
     });
 
     pythonProcess.stdin.write(JSON.stringify(transactions));
     pythonProcess.stdin.end();
 
     let result = '';
+    let errorOutput = '';  // <-- New: Capture stderr
 
     pythonProcess.stdout.on('data', (data) => {
       result += data.toString();
     });
 
-    pythonProcess.on('close', (code) => {
-      if (code === 0) {
-        res.status(500).json({ forecast: result });
-      }
-      const { forecast, alerts } = JSON.parse(result);
-      res.json({ forecast, alerts});
+    // Capture Python errors
+    pythonProcess.stderr.on('data', (data) => {
+      errorOutput += data.toString();
     });
+
+    pythonProcess.on('close', (code) => {
+      if (code !== 0) {
+        console.error(`Python Error: ${errorOutput}`);  // Log the actual error
+        return res.status(500).json({ 
+          error: "Model failed",
+          pythonError: errorOutput  // <-- Send to client for debugging
+        });
+      }
+      
+      try {
+        const { forecast, alerts, plot } = JSON.parse(result);
+        res.json({
+          forecast,
+          alerts,
+          plot: `data:image/png;base64,${plot}`
+        });
+      } catch (e) {
+        res.status(500).json({ 
+          error: "Invalid model output",
+          pythonOutput: result  // <-- Help debug parsing issues
+        });
+      }
+    });
+
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }

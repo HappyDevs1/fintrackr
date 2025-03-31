@@ -6,6 +6,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import json
 from datetime import datetime
+from io import BytesIO
+import base64
+import sys
 
 # Data preparation
 
@@ -79,8 +82,8 @@ def json_to_dataframe(json_input):
     
     return df
 
-df = json_to_dataframe("C:/open_source/investec_projects/fintrackr/server/test/fake_data.json")
-df
+# df = json_to_dataframe()  # Replace with your JSON input
+# df
 
 # feature engineering
 
@@ -117,7 +120,7 @@ def create_features(df, forecast_days=30):
     
     return daily_balances.dropna()
 
-create_features(df, forecast_days=30)
+# create_features(df, forecast_days=30)
 
 # Model building
 
@@ -136,12 +139,12 @@ def train_model(daily_balances, forecast_days=30):
     # Evaluate
     preds = model.predict(X_test)
     mae = mean_absolute_error(y_test, preds)
-    print(f"Mean Absolute Error: R{mae:.2f}")
+    # print(f"Mean Absolute Error: R{mae:.2f}")
     
     return model
 
-daily_balances = create_features(df)
-model = train_model(daily_balances)
+# daily_balances = create_features(df)
+# model = train_model(daily_balances)
 
 # Forecasting future balance
 
@@ -190,8 +193,8 @@ def forecast_future(model, daily_balances, forecast_days=30):
     
     return forecast_df
 
-forecast_df = forecast_future(model, daily_balances, forecast_days=30)
-forecast_df
+# forecast_df = forecast_future(model, daily_balances, forecast_days=30)
+# forecast_df
 
 def plot_forecast(daily_balances, forecast_df):
     plt.figure(figsize=(12, 6))
@@ -234,4 +237,48 @@ def generate_alerts(forecast_df, threshold=1000):
     
     return alerts
 
-plot_forecast(daily_balances, forecast_df)
+# plot_forecast(daily_balances, forecast_df)
+
+# Main function to run all the functions
+def main():
+    try:
+        # Read JSON from stdin
+        json_input = sys.stdin.read()
+        if not json_input:
+            raise ValueError("No input data received")
+        
+        # Process data
+        df = json_to_dataframe(json.loads(json_input))
+        daily_balances = create_features(df)
+        model = train_model(daily_balances)
+        forecast = forecast_future(model, daily_balances, 30)
+        
+        # Generate plot
+        plt.figure(figsize=(12, 6))
+        plt.plot(daily_balances.index, daily_balances['balance'], label='Historical')
+        plt.plot(forecast.index, forecast['balance'], label='Forecast')
+        plt.legend()
+        
+        # Convert plot to base64
+        buf = BytesIO()
+        plt.savefig(buf, format='png', bbox_inches='tight')
+        plt.close()
+        plot_base64 = base64.b64encode(buf.getvalue()).decode('utf-8')
+        
+        # Generate alerts
+        alerts = generate_alerts(forecast)
+        
+        # Output JSON
+        print(json.dumps({
+            "forecast": forecast.to_dict(orient='records'),  # Changed to 'records' for better frontend handling
+            "alerts": alerts,
+            "plot": plot_base64
+        }))
+        sys.exit(0)  # Explicit success exit
+        
+    except Exception as e:
+        print(f"Python Error: {str(e)}", file=sys.stderr)
+        sys.exit(1)  # Explicit error exit
+
+if __name__ == "__main__":
+    main()
