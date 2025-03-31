@@ -1,45 +1,51 @@
 "use client";
 
-import Image from "next/image";
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-export default function Home() {
-  const [imageUrl, setImageUrl] = useState('');
+export default function ForecastPlot() {
+  const [imageSrc, setImageSrc] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true);
         const response = await axios.get('http://localhost:4000/forecast');
-        const imageUrl = response.data.plot;
-        console.log("Image url: ", response.data.plot)
-
-        if (imageUrl) {
-          setImageUrl(imageUrl);
+        
+        if (response.data?.plot) {
+          setImageSrc(response.data.plot);
         } else {
-          console.error('No image URL received from the server');
+          throw new Error('No plot data received');
         }
-      } catch (error) {
-        console.error('Error fetching image URL:', error);
+      } catch (err) {
+        console.error('Fetch error:', err);
+        setError('Failed to load forecast');
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchData();
   }, []);
 
+  if (loading) return <div>Loading forecast...</div>;
+  if (error) return <div className="text-red-500">{error}</div>;
+
   return (
-    <div>
-      Hello bro
-      {/* {imageUrl ? (
+    <div className="p-4">
+      {imageSrc ? (
         <img
-          src={imageUrl}
+          src={imageSrc}
           alt="Balance Forecast"
+          className="w-full max-w-3xl mx-auto"
           width={800}
           height={400}
         />
       ) : (
-        <p>Loading...</p>
-      )} */}
+        <div>No forecast data available</div>
+      )}
     </div>
   );
 }
