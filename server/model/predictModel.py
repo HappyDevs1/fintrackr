@@ -258,6 +258,9 @@ def main():
         plt.plot(daily_balances.index, daily_balances['balance'], label='Historical')
         plt.plot(forecast.index, forecast['balance'], label='Forecast')
         plt.legend()
+        plt.title('Account Balance Forecast')
+        plt.xlabel('Date')
+        plt.ylabel('Balance (R)')
         
         # Convert plot to base64
         buf = BytesIO()
@@ -272,7 +275,9 @@ def main():
         print(json.dumps({
             "forecast": forecast.to_dict(orient='records'),  # Changed to 'records' for better frontend handling
             "alerts": alerts,
-            "plot": plot_base64
+            "lowest_balance": forecast['balance'].min(),
+            "lowest_balance_date": forecast['balance'].idxmin().strftime('%Y-%m-%d'),
+            "plot": plot_base64,
         }))
         sys.exit(0)  # Explicit success exit
         
