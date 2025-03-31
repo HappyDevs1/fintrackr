@@ -2,8 +2,6 @@ import express, { Request, Response } from "express";
 import dotenv from "dotenv";
 import { auth } from "./controllers/authenticate";
 import { getAccounts } from "./controllers/accounts";
-// Have to fix the error for this import
-// import { getAccountBalance } from "./controllers/accounts";
 import { getTopSpendingLocations, getTransactions } from "./controllers/transactions";
 import { spawn } from 'child_process';
 import cors from 'cors';
@@ -32,16 +30,6 @@ app.get('/accounts', async (req: Request, res: Response) => {
   }
 }); // Accounts route
 
-// Have to fix the error here
-
-// app.get('/account/balance', async (req: Request, res: Response) => {
-//   try {
-//     const balance = await getAccountBalance();
-//     res.status(200).json(balance);
-//   } catch (error: any) {
-//     res.status(500).json({ error: error.message });
-//   } 
-// }); // Account balance route
 app.use('/transactions', async (req: Request, res: Response) => {
   try {
     const transactions = await getTransactions();
@@ -50,6 +38,7 @@ app.use('/transactions', async (req: Request, res: Response) => {
     res.status(500).json({ error: error.message });
   }
 }); // Transactions route
+
 app.use('/top/transactions', async (req: Request, res: Response) => {
   try {
     const transactions = await getTopSpendingLocations();
