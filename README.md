@@ -49,4 +49,19 @@
    cd server && npm run dev
    # In another terminal, start frontend
    cd client && npm run dev
-   
+
+
+## 🧠 Machine Learning Model
+**Model Architecture**
+Algorithm: Random Forest Regressor
+
+**Features Engineered:**
+- Daily balance trends
+- Day-of-the week spending patterns
+- 7/30-day rolling average
+- Transaction type indication
+
+**Key Metrics**
+- Mean Absolute Error: R84.51
+- Forecast Horizon: 30 days
+- Training Data: 6 monts of transaction history
