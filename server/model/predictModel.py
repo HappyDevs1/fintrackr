@@ -82,9 +82,6 @@ def json_to_dataframe(json_input):
     
     return df
 
-# df = json_to_dataframe()  # Replace with your JSON input
-# df
-
 # feature engineering
 
 def create_features(df, forecast_days=30):
@@ -100,7 +97,6 @@ def create_features(df, forecast_days=30):
     daily_balances['balance'] = df.groupby('transactionDate')['amount'].sum().reindex(all_dates).cumsum().ffill()
     
     # Add the initial balance (you'll need to get this from the API)
-    # For example, if the first runningBalance is 28451.28 (from your sample)
     initial_balance = df.iloc[0]['runningBalance'] - df.iloc[0]['amount']
     daily_balances['balance'] += initial_balance
     
@@ -120,8 +116,6 @@ def create_features(df, forecast_days=30):
     
     return daily_balances.dropna()
 
-# create_features(df, forecast_days=30)
-
 # Model building
 
 def train_model(daily_balances, forecast_days=30):
@@ -139,12 +133,8 @@ def train_model(daily_balances, forecast_days=30):
     # Evaluate
     preds = model.predict(X_test)
     mae = mean_absolute_error(y_test, preds)
-    # print(f"Mean Absolute Error: R{mae:.2f}")
     
     return model
-
-# daily_balances = create_features(df)
-# model = train_model(daily_balances)
 
 # Forecasting future balance
 
@@ -193,9 +183,6 @@ def forecast_future(model, daily_balances, forecast_days=30):
     
     return forecast_df
 
-# forecast_df = forecast_future(model, daily_balances, forecast_days=30)
-# forecast_df
-
 def plot_forecast(daily_balances, forecast_df):
     plt.figure(figsize=(12, 6))
     plt.plot(daily_balances.index, daily_balances['balance'], label='Historical Balance')
@@ -236,8 +223,6 @@ def generate_alerts(forecast_df, threshold=1000):
         })
     
     return alerts
-
-# plot_forecast(daily_balances, forecast_df)
 
 # Main function to run all the functions
 def main():
