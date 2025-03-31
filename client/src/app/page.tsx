@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { redirect } from "next/navigation";
 import SpendingPieChart from "./components/SpendingPieChart";
+import SpendingRecommendations from "./components/SpendingRecommendations";
 
 interface SpendingData {
   place: string;
@@ -15,6 +16,10 @@ export default function ForecastPlot() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [spendingData, setSpendingData] = useState<SpendingData[]>([]);
+  const topCategory = spendingData[0]?.place || '';
+  const topAmount = spendingData[0]?.totalAmount || 0;
+  const totalSpending = spendingData.reduce((sum, item) => sum + item.totalAmount, 0);
+  const topPercentage = totalSpending > 0 ? Math.round((topAmount / totalSpending) * 100) : 0;
 
   const fetchTopTransactions = async () => {
     try {
@@ -118,25 +123,48 @@ export default function ForecastPlot() {
         </div>
         {/* Transactions container */}
         <div className="mt-20">
-          <div className="max-w-3xl mx-auto p-4">
-            <h1 className="text-2xl font-bold mb-6">Top Spending Categories</h1>
-            <div className="bg-white p-4 rounded-lg shadow">
-              <div className="relative h-[300px] w-full sm:h-[400px] md:h-[500px]">
-                <SpendingPieChart data={spendingData} />
+        <div className="max-w-3xl mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-6">Your Spending Breakdown</h1>
+      
+      {/* Pie Chart */}
+      <div className="bg-white p-4 rounded-lg shadow">
+        <div className="h-96">
+          <SpendingPieChart data={spendingData} />
+        </div>
+      </div>
+
+      {/* Recommendations */}
+      {spendingData.length > 0 && (
+        <SpendingRecommendations 
+          topCategory={topCategory} 
+          topAmount={topAmount} 
+          percentage={topPercentage} 
+        />
+      )}
+
+      {/* Spending Details */}
+      <div className="mt-6 bg-white p-4 rounded-lg shadow">
+        <h2 className="text-lg font-semibold mb-3">Detailed Breakdown</h2>
+        <div className="space-y-2">
+          {spendingData.map((item, index) => (
+            <div key={index} className="flex justify-between items-center border-b pb-2">
+              <div className="flex items-center">
+                <div 
+                  className="w-3 h-3 rounded-full mr-2" 
+                  style={{ 
+                    backgroundColor: [
+                      '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'
+                    ][index % 5] 
+                  }}
+                />
+                <span>{item.place}</span>
               </div>
-              <div className="mt-4">
-                <h2 className="text-lg font-semibold">Breakdown</h2>
-                <ul className="mt-2 space-y-1">
-                  {spendingData.map((item, index) => (
-                    <li key={index} className="flex justify-between">
-                      <span>{item.place}</span>
-                      <span>R{item.totalAmount.toFixed(2)}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              <span className="font-medium">R{item.totalAmount.toFixed(2)}</span>
             </div>
-          </div>
+          ))}
+        </div>
+      </div>
+    </div>
         </div>
       </div>
     </div>
