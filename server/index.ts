@@ -6,6 +6,7 @@ import { getAccounts } from "./controllers/accounts";
 // import { getAccountBalance } from "./controllers/accounts";
 import { getTransactions } from "./controllers/transactions";
 import { spawn } from 'child_process';
+import cors from 'cors';
 
 dotenv.config();
 const app = express();
@@ -15,6 +16,7 @@ const PORT = process.env.PORT;
 const modelPath = "./model/predictModel.py";
 
 app.use(express.json());
+app.use(cors())
 
 app.get("/", (request: Request, response: Response) => { 
   response.status(200).send("Fintrackr API is running!");
