@@ -65,3 +65,11 @@ Algorithm: Random Forest Regressor
 - Mean Absolute Error: R84.51
 - Forecast Horizon: 30 days
 - Training Data: 6 monts of transaction history
+
+
+## 🤝 Contributing
+1. Fork teh project
+2. Create your feature branch (git checkout -b feature/AmazingFeature)
+3. Commit your changes (git commit -m "Add some amazing feature")
+4. Push to the branch(git push origin feature/AmazingFeature)
+5. Open a Pull Request
